@@ -7,23 +7,55 @@ import clsx from 'clsx';
 
 const CATEGORIES = ['ALL', 'CYBERSECURITY', 'BLUE TEAM', 'AI', 'WEB', 'AUTOMATION'];
 
+const HARDCODED_PROJECTS = [
+  {
+    _id: '1',
+    title: 'ForgeSOC Platform',
+    description: 'A Security Operations Center dashboard. Synthetic security events flow through a rule-based detection engine, correlate into incidents, trigger real-time IP blocking, and push live updates to every connected analyst.',
+    category: 'CYBERSECURITY',
+    technologies: ['React', 'Vite', 'Three.js', 'Socket.IO'],
+    status: 'ACTIVE',
+    featured: true
+  },
+  {
+    _id: '2',
+    title: 'PhishGuard Training Lab',
+    description: 'An interactive platform designed to train users against phishing attacks. Includes a dynamic Email Simulator, interactive quizzes, and offline AI fallbacks to safely identify and learn about malicious emails and red flags.',
+    category: 'BLUE TEAM',
+    technologies: ['React', 'Tailwind CSS', 'Node.js', 'Lovable'],
+    demo: 'https://swift-build-smile.lovable.app',
+    status: 'COMPLETED',
+    featured: true
+  },
+  {
+    _id: '3',
+    title: 'NetWatch Platform',
+    description: 'A professional SOC-style network intelligence platform. Scans authorized domains and IPs, detects services and open ports, and visualizes the discovered infrastructure dynamically in a stunning 3D simulated environment.',
+    category: 'CYBERSECURITY',
+    technologies: ['React', 'TypeScript', 'Three.js', 'Tailwind CSS'],
+    demo: 'https://netwatch-aura-91.lovable.app',
+    status: 'COMPLETED',
+    featured: true
+  }
+];
+
 export default function Projects() {
-  const [projects, setProjects] = useState([]);
-  const [filteredProjects, setFilteredProjects] = useState([]);
+  const [projects, setProjects] = useState(HARDCODED_PROJECTS);
+  const [filteredProjects, setFilteredProjects] = useState(HARDCODED_PROJECTS);
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchProjects = async () => {
       try {
         const { data } = await api.get('/projects');
-        setProjects(data);
-        setFilteredProjects(data);
-        setLoading(false);
+        if (data && data.length > 0) {
+          setProjects(data);
+          setFilteredProjects(data);
+        }
       } catch (err) {
-        setError('Failed to load project database. Connection refused.');
-        setLoading(false);
+        console.warn('Using fallback hardcoded projects due to API error.');
       }
     };
     fetchProjects();
