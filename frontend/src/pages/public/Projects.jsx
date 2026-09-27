@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Code, ExternalLink, Loader, FolderKanban } from 'lucide-react';
-import api from '../../services/api';
 import CyberCard from '../../components/common/CyberCard';
 import clsx from 'clsx';
 
@@ -40,34 +39,16 @@ const HARDCODED_PROJECTS = [
 ];
 
 export default function Projects() {
-  const [projects, setProjects] = useState(HARDCODED_PROJECTS);
   const [filteredProjects, setFilteredProjects] = useState(HARDCODED_PROJECTS);
   const [activeCategory, setActiveCategory] = useState('ALL');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        const { data } = await api.get('/projects');
-        if (data && data.length > 0) {
-          setProjects(data);
-          setFilteredProjects(data);
-        }
-      } catch (err) {
-        console.warn('Using fallback hardcoded projects due to API error.');
-      }
-    };
-    fetchProjects();
-  }, []);
 
   useEffect(() => {
     if (activeCategory === 'ALL') {
-      setFilteredProjects(projects);
+      setFilteredProjects(HARDCODED_PROJECTS);
     } else {
-      setFilteredProjects(projects.filter(p => p.category.toUpperCase() === activeCategory));
+      setFilteredProjects(HARDCODED_PROJECTS.filter(p => p.category.toUpperCase() === activeCategory));
     }
-  }, [activeCategory, projects]);
+  }, [activeCategory]);
 
   const getStatusColor = (status) => {
     switch(status) {
@@ -115,16 +96,7 @@ export default function Projects() {
         ))}
       </div>
 
-      {loading ? (
-        <div className="flex flex-col items-center justify-center py-20">
-          <Loader className="w-10 h-10 text-cyan-400 animate-spin mb-4" />
-          <p className="text-cyan-400 font-mono text-sm animate-pulse">ACCESSING PROJECT REPOSITORY...</p>
-        </div>
-      ) : error ? (
-        <div className="text-center py-20 border border-red-500/20 bg-red-500/5 rounded-sm">
-          <p className="text-red-400 font-mono">{error}</p>
-        </div>
-      ) : filteredProjects.length === 0 ? (
+      {filteredProjects.length === 0 ? (
         <div className="text-center py-20 border border-cyan-500/20 bg-black/40 rounded-sm">
           <p className="text-gray-400 font-mono">NO PROJECTS FOUND IN SELECTED CATEGORY.</p>
         </div>
